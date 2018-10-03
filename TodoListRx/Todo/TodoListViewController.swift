@@ -47,11 +47,11 @@ class TodoListViewController: UIViewController {
     }
     
     func bindViewModel() {
-        let input = TodoListViewModel.Input(loadTrigger: Driver.just(()),
-                                            addTaskTrigger: addTaskSubject.asDriver(onErrorJustReturn: TodoTask()))
+        let input = TodoListViewModel.Input(loadTrigger: Observable.just(()),
+                                            addTaskTrigger: addTaskSubject.asObservable())
         let output = viewModel.transform(input: input)
         output.todoList
-            .drive(todoListTableView.rx.items) { tableView, index, task in
+            .bind(to: todoListTableView.rx.items) { tableView, index, task in
                 let indexPath = IndexPath(row: index, section: 0)
                 let cell: TodoTableViewCell = tableView.dequeueReusableCell(for: indexPath)
                 cell.setContentWith(title: task.title, description: task.description)
@@ -59,7 +59,7 @@ class TodoListViewController: UIViewController {
             }
             .disposed(by: disposeBag)
         output.addTaskResult
-            .drive()
+            .subscribe()
             .disposed(by: disposeBag)
     }
     

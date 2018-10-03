@@ -8,16 +8,17 @@
 
 import Foundation
 import RxCocoa
+import RxSwift
 
 struct TodoListViewModel {
     struct Input {
-        let loadTrigger: Driver<Void>
-        let addTaskTrigger: Driver<TodoTask>
+        let loadTrigger: Observable<Void>
+        let addTaskTrigger: Observable<TodoTask>
     }
     
     struct Output {
-        let todoList: Driver<[TodoTask]>
-        let addTaskResult: Driver<Void>
+        let todoList: Observable<[TodoTask]>
+        let addTaskResult: Observable<Void>
     }
     
     func transform(input: Input) -> Output {
@@ -28,7 +29,7 @@ struct TodoListViewModel {
                 listTask.append(task)
                 todoList.accept(listTask)
         }
-        return Output(todoList: todoList.asDriver(),
+        return Output(todoList: todoList.asObservable(),
                       addTaskResult: addTaskResult)
     }
 }

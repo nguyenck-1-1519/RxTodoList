@@ -26,22 +26,22 @@ class AddTaskViewController: UIViewController {
     }
     
     func bindViewModel() {
-        let input = AddTaskViewModel.Input(titleTrigger: titleTextField.rx.text.orEmpty.asDriver(),
-                                           descriptionTrigger: descriptionTextField.rx.text.orEmpty.asDriver(),
-                                           addTaskTrigger: addTaskButton.rx.tap.asDriver(),
-                                           cancelAddTaskTrigger: cancelButton.rx.tap.asDriver())
+        let input = AddTaskViewModel.Input(titleTrigger: titleTextField.rx.text.orEmpty.asObservable(),
+                                           descriptionTrigger: descriptionTextField.rx.text.orEmpty.asObservable(),
+                                           addTaskTrigger: addTaskButton.rx.tap.asObservable(),
+                                           cancelAddTaskTrigger: cancelButton.rx.tap.asObservable())
         let output = viewModel.transform(input: input)
         output.isAddable
-            .drive(addTaskButton.rx.isEnabled)
+            .bind(to: addTaskButton.rx.isEnabled)
             .disposed(by: disposeBag)
         output.addTaskResult
-            .drive(onNext: { [unowned self] task in
+            .subscribe(onNext: { [unowned self] task in
                 self.navigationController?.popViewController(animated: true)
-                NotificationCenter.default.post(name: NSNotification.Name("NewTask"), object: TodoTask.self, userInfo: ["data" : task])
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "NewTask"), object: TodoTask.self, userInfo: ["data" : task])
             })
             .disposed(by: disposeBag)
         output.cancelAddTaskResult
-            .drive(onNext: { [unowned self] _ in
+            .subscribe(onNext: { [unowned self] _ in
                 self.navigationController?.popViewController(animated: true)
             })
             .disposed(by: disposeBag)
