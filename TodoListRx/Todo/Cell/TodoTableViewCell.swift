@@ -10,7 +10,7 @@ import UIKit
 import Reusable
 
 class TodoTableViewCell: UITableViewCell, NibReusable {
-
+    
     @IBOutlet private weak var descriptionLabel: UILabel!
     @IBOutlet private weak var titleLabel: UILabel!
     

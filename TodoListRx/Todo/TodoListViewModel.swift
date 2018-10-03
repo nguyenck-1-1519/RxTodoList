@@ -21,8 +21,7 @@ struct TodoListViewModel {
     }
     
     func transform(input: Input) -> Output {
-        let useCase = TodoListUseCase()
-        let todoList = BehaviorRelay<[TodoTask]>(value: useCase.readTodoListFromLocal())
+        let todoList = BehaviorRelay<[TodoTask]>(value: [TodoTask(title: "task1", description: "Nothing")])
         let addTaskResult = input.addTaskTrigger
             .withLatestFrom(todoList.asDriver()) { task, todos in
                 var listTask = todos

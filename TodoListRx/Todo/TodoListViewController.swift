@@ -12,7 +12,7 @@ import RxCocoa
 import Then
 
 class TodoListViewController: UIViewController {
-
+    
     @IBOutlet private weak var todoListTableView: UITableView!
     var viewModel = TodoListViewModel()
     var addTaskSubject = PublishRelay<TodoTask>()
@@ -33,6 +33,17 @@ class TodoListViewController: UIViewController {
         
         let addTaskButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addTaskButtonClicked(sender:)))
         self.navigationItem.rightBarButtonItem = addTaskButton
+        
+        NotificationCenter.default.rx
+            .notification(Notification.Name(rawValue: "NewTask"), object: TodoTask.self)
+            .map{ $0.userInfo }
+            .subscribe(onNext:{ userInfo in
+                guard let dict = userInfo as? [String : TodoTask], let task = dict["data"] else {
+                    return
+                }
+                self.addTaskSubject.accept(task)
+            })
+            .disposed(by: disposeBag)
     }
     
     func bindViewModel() {
@@ -53,6 +64,7 @@ class TodoListViewController: UIViewController {
     }
     
     @objc func addTaskButtonClicked(sender: Any) {
-        addTaskSubject.accept(TodoTask(title: "task temp", description: "N/A"))
+        let vc = UIStoryboard(name: "AddTask", bundle: nil).instantiateViewController(withIdentifier: "AddTaskViewController")
+        self.navigationController?.pushViewController(vc, animated: true)
     }
 }
